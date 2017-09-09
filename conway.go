@@ -22,10 +22,8 @@ func createBoard(width, height int) *Board {
 	return &Board{board: board, width: width, height: height}
 }
 
-//function to read the startstate of the game from a file to the Board struct
+// read the startstate of the game from a file to the Board struct
 func (board *Board) importStartStateScanner(filename string) {
-
-	
 	file, err := os.Open(filename) 		// open file for reading
     if err != nil { 			   		// if the file does not exist log and exit
         log.Fatal(err)
@@ -56,7 +54,7 @@ func (board *Board) importStartStateScanner(filename string) {
 
 }
 
-// function to print the current gamestate to standard output 
+//  print the current gamestate to standard output 
 func (board *Board) print() {
 	for i := 0 ; i < board.height ; i++ {		// for each row
 		for j := 0 ; j < board.width ; j++ {	// for each col
@@ -70,110 +68,75 @@ func (board *Board) print() {
 	}
 }
 
-//function to check if a particular cell is alive
+// check if a particular cell is alive
 func (board *Board) isAlive(row, col int) bool {
 	return board.board[row+1][col+1]
 }
 
-//function to set the state of a particular cell (alive / dead)
+// set the state of a particular cell (alive / dead)
 func (board *Board) setPosition(row int, col int, alive bool) *Board {
 	board.board[row+1][col+1] = alive
 	return board
 }
 
-func Btoi(b bool) int {
-    if b {
-        return 1
-    }
-    return 0
- }
-
-func (board *Board) countNeighbors4(row, col int) int {
-	return Btoi( board.isAlive(row-1, col) ) + 
-		Btoi( board.isAlive(row+1, col) ) + 
-		Btoi( board.isAlive(row, col-1) ) + 
-		Btoi( board.isAlive(row, col+1) ) 
-}
-
+// count how many of cell at (row, col)'s eight neighbors are alive
 func (board *Board) countNeighbors(row, col int) int {
-	count := 0
-	for i := -1; i <= 1; i++ {
-		for j:= -1; j <= 1; j++ {
-			// fmt.Printf("|%d,%d-", row+i, col+j)
-			if !(i==0 && j==0) && board.isAlive(row+i, col+j) {
+	count := 0						// innitalize a var to count living  neighbors
+	for i := -1; i <= 1; i++ {		// check above and below
+		for j:= -1; j <= 1; j++ {	// check left and right
+			//check the eight neighbors (but don't count self)
+			if !(i==0 && j==0) && board.isAlive(row+i, col+j) { 
 				count++
 			}
-			// fmt.Printf("%d|", count)
 		}
 	}
-	// fmt.Println()
 	return count
 }
 
-func (board *Board) clone() *Board {
-	newBoard := createBoard(board.width, board.height)
-	for i:=0;i<board.height;i++ {
-		for j:=0;j<board.width;j++ {
-			newBoard.setPosition(i, j, board.isAlive(i,j) )
-		}
-	}
-	return newBoard
-}
+// update a board with the contents of another
 func (oldboard *Board) update(newBoard *Board) {
-	for i:=0;i<oldboard.height;i++ {
+	for i:=0;i<oldboard.height;i++ {	 // for each cell in the new board, get the value from the oldboard
 		for j:=0;j<oldboard.width;j++ {
 			oldboard.setPosition(i, j, newBoard.isAlive(i,j) )
 		}
 	}
 }
 
+// advance the board to the next state
 func (board *Board) nextState() {
-	nextboard := board.clone()
+	nextboard := createBoard(board.width, board.height)		// create a board to store the next state
 
-	// fmt.Println("old board\n")
-	// board.print()
-	// fmt.Println("\nnew board\n")
-	// nextboard.print()
-	// fmt.Println("\nneighborcounts\n")
 	for i:=0; i<board.height; i++ {
-		for j:=0; j<board.width; j++ {
-			count := board.countNeighbors(i, j)
-			// fmt.Print(count)
-			if count < 2 || count > 3 {
-			// if (count == 0 || count == 1 || count == 4) {
+		for j:=0; j<board.width; j++ {   					// for each cell
+			count := board.countNeighbors(i, j)		    		 // get the neighbor count
+
+			if count < 2 || count > 3 {							 // if the count is  0, 1, or 4 die
 				nextboard.setPosition(i, j, false)
 			} else if count == 3 {
-				nextboard.setPosition(i, j, true)
-			} // else if count == 2 {
-			  //		noop()
-			  // }
+				nextboard.setPosition(i, j, true)				 // if count is 3 spring to life
+			} else {
+				nextboard.setPosition(i, j, board.isAlive(i,j) ) // if count is 2 remain unchanged
+			}
 		}
-		// fmt.Println()
 	}
 
-	// fmt.Println("old board\n")
-	// board.print()
-	// fmt.Println("\nnew board\n")
-	// nextboard.print()
-
-
-	board.update(nextboard)
-
-	// fmt.Println("\nperform update\n\n")
-	// board.print()
-	// fmt.Println("\nend round....\n\n\n\n")
-
+	board.update(nextboard)										 // update the board with the new state
 }
 
 func main() {
-	board := createBoard(20, 8)
-    board.importStartStateScanner("life.txt")
+	// define the board size and number generations to simulate
+	boardWidth := 20
+	boardHeight := 8
+	numGenerations := 10
+
+	board := createBoard(boardWidth, boardHeight)		// create the board
+    board.importStartStateScanner("life.txt")		    // read the seed state from life.txt
     
 
-    for i := 0 ; i <= 10 ; i++ {
-    	fmt.Printf("\nState #%d\n", i)
-    	board.print()
-    	board.nextState()
+    for i := 0 ; i <= numGenerations ; i++ {			// advance numGenerations
+    	fmt.Printf("\nState #%d\n", i)					// print state #
+    	board.print()									// print board state
+    	board.nextState()								// advance to the next generation
     }
 }
 
