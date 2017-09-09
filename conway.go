@@ -81,12 +81,100 @@ func (board *Board) setPosition(row int, col int, alive bool) *Board {
 	return board
 }
 
+func Btoi(b bool) int {
+    if b {
+        return 1
+    }
+    return 0
+ }
 
+func (board *Board) countNeighbors4(row, col int) int {
+	return Btoi( board.isAlive(row-1, col) ) + 
+		Btoi( board.isAlive(row+1, col) ) + 
+		Btoi( board.isAlive(row, col-1) ) + 
+		Btoi( board.isAlive(row, col+1) ) 
+}
+
+func (board *Board) countNeighbors(row, col int) int {
+	count := 0
+	for i := -1; i <= 1; i++ {
+		for j:= -1; j <= 1; j++ {
+			// fmt.Printf("|%d,%d-", row+i, col+j)
+			if !(i==0 && j==0) && board.isAlive(row+i, col+j) {
+				count++
+			}
+			// fmt.Printf("%d|", count)
+		}
+	}
+	// fmt.Println()
+	return count
+}
+
+func (board *Board) clone() *Board {
+	newBoard := createBoard(board.width, board.height)
+	for i:=0;i<board.height;i++ {
+		for j:=0;j<board.width;j++ {
+			newBoard.setPosition(i, j, board.isAlive(i,j) )
+		}
+	}
+	return newBoard
+}
+func (oldboard *Board) update(newBoard *Board) {
+	for i:=0;i<oldboard.height;i++ {
+		for j:=0;j<oldboard.width;j++ {
+			oldboard.setPosition(i, j, newBoard.isAlive(i,j) )
+		}
+	}
+}
+
+func (board *Board) nextState() {
+	nextboard := board.clone()
+
+	// fmt.Println("old board\n")
+	// board.print()
+	// fmt.Println("\nnew board\n")
+	// nextboard.print()
+	// fmt.Println("\nneighborcounts\n")
+	for i:=0; i<board.height; i++ {
+		for j:=0; j<board.width; j++ {
+			count := board.countNeighbors(i, j)
+			// fmt.Print(count)
+			if count < 2 || count > 3 {
+			// if (count == 0 || count == 1 || count == 4) {
+				nextboard.setPosition(i, j, false)
+			} else if count == 3 {
+				nextboard.setPosition(i, j, true)
+			} // else if count == 2 {
+			  //		noop()
+			  // }
+		}
+		// fmt.Println()
+	}
+
+	// fmt.Println("old board\n")
+	// board.print()
+	// fmt.Println("\nnew board\n")
+	// nextboard.print()
+
+
+	board.update(nextboard)
+
+	// fmt.Println("\nperform update\n\n")
+	// board.print()
+	// fmt.Println("\nend round....\n\n\n\n")
+
+}
 
 func main() {
 	board := createBoard(20, 8)
     board.importStartStateScanner("life.txt")
-    board.print()
+    
+
+    for i := 0 ; i <= 10 ; i++ {
+    	fmt.Printf("\nState #%d\n", i)
+    	board.print()
+    	board.nextState()
+    }
 }
 
 
