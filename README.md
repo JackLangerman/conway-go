@@ -32,3 +32,7 @@ Naming
 Use of functions
 Length of lines and functions
 Good commenting.
+
+### TODO
+* goify comments -- Make comments full sentances [https://golang.org/doc/effective_go.html#commentary](https://golang.org/doc/effective_go.html#commentary)
+* run go fmtt
