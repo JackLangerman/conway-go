@@ -90,11 +90,15 @@ func (board *Board) setPosition(row int, col int, alive bool) *Board {
 
 // countNeighbors counts how many of cell at (row, col)'s eight neighbors are alive.
 func (board *Board) countNeighbors(row, col int) int {
+	var kern = [][]bool{{true,  true, true},
+				        {true, false, true},		// kernal for convolution
+				        {true,  true, true}}
+
 	count := 0						// innitalize a var to count living  neighbors
+
 	for i := -1; i <= 1; i++ {		// check above and below
 		for j:= -1; j <= 1; j++ {	// check left and right
-			//check the eight neighbors (but don't count self)
-			if !(i==0 && j==0) && board.isAlive(row+i, col+j) { 
+			if kern[i+1][j+1] && board.isAlive(row+i, col+j) { 
 				count++
 			}
 		}
@@ -110,11 +114,12 @@ func (board *Board) nextState() {
 		for j:=0; j<board.width; j++ {   					// for each cell
 			count := board.countNeighbors(i, j)		    		 // get the neighbor count
 
-			if count < 2 || count > 3 {							 // if the count is  0, 1, or 4 die
+			switch {
+			case count < 2 || count > 3:						 // if the count is  0, 1, or 4 die
 				nextboard.setPosition(i, j, false)
-			} else if count == 3 {
+			case count == 3:
 				nextboard.setPosition(i, j, true)				 // if count is 3 spring to life
-			} else {
+			default:
 				nextboard.setPosition(i, j, board.isAlive(i,j) ) // if count is 2 remain unchanged
 			}
 		}
