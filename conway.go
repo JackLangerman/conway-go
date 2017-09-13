@@ -1,3 +1,4 @@
+// Package main implements Conway's Game of Life
 package main
 
 import (
