@@ -70,7 +70,7 @@ func (board *Board) print() {
 			if board.isAlive(i, j) {			// check if the curent cell is alive
 				fmt.Print("*")					// if so print "*"
 			} else {
-				fmt.Print(" ")					// else print " "
+				fmt.Print("-")					// else print " "
 			}
 		}
 		fmt.Print("\n")
