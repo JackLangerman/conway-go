@@ -3,6 +3,10 @@
 ## build instructions
 run 
 ```bash
+go build && ./conway
+```
+or
+```bash
 go build && ./conway life3.txt
 ```
 from the command line
