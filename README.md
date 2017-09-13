@@ -1,15 +1,25 @@
 # conway-go
 
-## build instructions
+## build / test / run instructions
 run 
 ```bash
-go build && ./conway
+go build && ./conway-go					# runs 10 generations starting from life.txt	
 ```
 or
 ```bash
-go build && ./conway life3.txt
+go build && ./conway-go life2.txt 		# runs 100 generations starting from life2.txt
+```
+or
+```bash
+go build && ./conway-go life3.txt 1005 	# runs 1005 generations starting from life3.txt
 ```
 from the command line
+
+to test output against ex_out.txt
+```bash
+go build && ./conway-go | diff ex_out.txt -
+```
+(it worked if nothing prints)
 
 
 ## Intro to Go
