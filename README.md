@@ -1,5 +1,12 @@
 # conway-go
 
+## build instructions
+run 
+```bash
+go build && ./conway life3.txt
+```
+from the command line
+
 
 ## Intro to Go
 

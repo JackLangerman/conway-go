@@ -2,12 +2,20 @@ package main
 
 import (
     "fmt"
+    "os"
 )
 
 const numGenerations = 1005
 
 func main() {
-    board := importBoard("life3.txt")
+	var filename string
+	if len(os.Args) > 1 {
+		filename = os.Args[1]
+	} else {
+		filename = "life.txt"
+	}
+
+    board := importBoard(filename)
 
     for i := 0 ; i <= numGenerations ; i++ {			// advance numGenerations
     	fmt.Printf("\nState #%d\n", i)					// print state #
